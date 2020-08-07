@@ -1,12 +1,45 @@
 const express = require("express");
 const app = express();
+const session = require("express-session");
+const bcrypt = require("bcrypt");
+const pool = require("./dbPool.js");
+
+app.engine('html', require('ejs').renderFile);
+app.use(express.static("public"));
 
 app.set("view engine", "ejs");
-app.use(express.static("public"));
+
+app.use(session({
+    secret: "top secret!",
+    resave: true,
+    saveUninitialized: true
+}));
+
+app.use(express.urlencoded({extended: true}));
 
 //routes
 app.get("/", function(req, res) {
-   res.render("admin");
+    res.render("index.ejs", {"authenticatied": (req.session.authenticatied ? true : false)});
+});
+
+app.get("/flight", function(req, res) {
+    res.render("flight.ejs", {"authenticatied": (req.session.authenticatied ? true : false)});
+});
+
+app.get("/hotel", function(req, res) {
+    res.render("hotel.ejs", {"authenticatied": (req.session.authenticatied ? true : false)});
+});
+
+app.get("/contact", function(req, res) {
+   res.render("contact.ejs", {"authenticatied": (req.session.authenticatied ? true : false)});
+});
+
+app.get("/admin", function(req, res) {
+   res.render("admin.ejs", {"authenticatied": (req.session.authenticatied ? true : false)}); 
+});
+
+app.get("/login", function(req, res) {
+   res.render("login.ejs"); 
 });
 
 app.post("/login", async function(req, res) {
@@ -94,6 +127,54 @@ function isAuthenticated(req, res, next) {
     } else {
         next();
     }
+}
+
+function checkUsername(username) {
+    return new Promise(function(resolve, reject) {
+        let sql = "SELECT * FROM users WHERE username = ? ";
+        let sqlParams = [username];
+        pool.query(sql, sqlParams, function (err, rows, fields) {
+            if (err) throw err;
+            console.log("UserName Rows found: " + rows.length);
+            resolve(rows);
+        });
+    });
+}
+
+function getUserInfo(username) {
+    return new Promise(function(resolve, reject) {
+        let sql = "SELECT * FROM users WHERE username = ? ";
+        let sqlParams = [username];
+        pool.query(sql, sqlParams, function (err, rows, fields) {
+            if (err) throw err;
+            console.log("UserName Rows found: " + rows.length);
+            resolve(rows);
+        });
+    });
+}
+
+function getFlightReservation(username) {
+    return new Promise(function(resolve, reject) {
+        let sql = "SELECT * FROM flights JOIN users ON (flights.user_id = users.user_id) and users.username = ?";
+        let sqlParams = [username];
+        pool.query(sql, sqlParams, function (err, rows, fields) {
+            if (err) throw err;
+            console.log("Fights Rows found: " + rows.length);
+            resolve(rows);
+        });
+    });
+}
+
+function getHotelReservation(username) {
+    return new Promise(function(resolve, reject) {
+        let sql = "SELECT * FROM hotels JOIN users ON (flights.user_id = users.user_id) and users.username = ?";
+        let sqlParams = [username];
+        pool.query(sql, sqlParams, function (err, rows, fields) {
+            if (err) throw err;
+            console.log("Hotels Rows found: " + rows.length);
+            resolve(rows);
+        });
+    });
 }
 
 //starting server

@@ -1,0 +1,63 @@
+<%- include('partials/header.ejs') %>
+<%- include('partials/login.ejs') %>
+        <div class="container my-5">
+            <h1 class="">My Account</h1>
+            <div class="container jumbotron">
+                <div class="row">
+                    <div class="col-md-8 mx-auto ">
+                        <form>
+                            <div class="form-group">
+                                <label for="username">User Name: </label>
+                                <input type="text" class="form-control" id="username" value="<%= users[0].username%>" readonly></div>
+                            <div class="form-group">
+                                <label for="firstname">First Name: </label>
+                                <input type="text" class="form-control" id="firstname" value="<%= users[0].firstname%>" readonly> </div>
+                            <div class="form-group">
+                                <label for="lastname">Last Name: </label>
+                                <input type="text" class="form-control" id="lastname" value="<%= users[0].lastname%>" readonly> </div>
+                            <div class="form-group">
+                                <label for="age">Age: </label>
+                                <input type="number" class="form-control" id="age" value="<%= users[0].age%>" readonly> </div>
+                            <div class="form-group">
+                                <label for="title">Title: </label>
+                                <input type="text" class="form-control" id="title" value="<%= users[0].title%>" readonly> </div>
+                            <div class="form-group">
+                                <label for="email">Email: </label>
+                                <input type="email" class="form-control" id="email" value="<%= users[0].email%>" readonly> </div>
+                            <div class="form-group">
+                                <label for="phone">Phone: </label>
+                                <input type="text" class="form-control" id="phone" value="<%= users[0].phone%>" readonly> 
+                            </div>
+                            
+                            <div class="container">
+                                <div class="row mb-2 font-weight-bold justify-content-start">
+                                    <div class="col-sm-8 justify-content-start text-left">
+                                        Title
+                                    </div>
+                                    <div class="col-sm-2 text-left">
+                                        Type
+                                    </div>
+                                    <div class="col-sm-2 text-left">
+                                    </div>
+                                </div>
+                                    
+                                <% items.forEach(function(item) { if (item.paid != null) { %>
+                                    <div class="row mb-2 justify-content-start">
+                                        <div class="col-sm-8 justify-content-start text-left">
+                                            <%= item.title %>
+                                        </div>
+                                        <div class="col-sm-2 text-left">
+                                            <%= item.type %>
+                                        </div>
+                                        <div class="col-sm-2 text-left">
+                                            <button class="btn btn-danger btn-remove" type="button" value="<%= item.id %>">REMOVE</button>
+                                        </div>
+                                    </div>
+                                <% } });%>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+<%- include('partials/footer.ejs') %>

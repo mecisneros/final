@@ -1,0 +1,88 @@
+<%- include('partials/header.ejs') %>
+<%- include('partials/checkout.ejs') %>
+    <div id="cart" class="d-flex justify-content-end mr-5">
+        <span class="items align-self-center mr-5 px-3">0 items &#128722;</span>
+    </div>
+        <div class="row">
+            <div class="col-4 mb-5">
+                <!-- Search Box -->
+                <section id="search" class="section ml-5 mb-5 p-3 bg-primary text-white">
+                    <h6 class="d-inline">Search</h6><br>
+                    <label for="hotelLoc" class="mb-0">Location:</label><br>
+                    <input type="text" id="hotelLoc" class="form-control mb-3">
+                    
+                        <label for="checkinDate" class="mb-0">Check-in:</label>
+                        <input type="date" id="checkinDate" class="form-control mb-1">
+                        <label for="checoutDate" class="mb-0">Check-out:</label>
+                        <input type="date" id="checkoutDate" class="form-control mb-3">
+                    
+                    <!-- Button or should it be form submit? -->
+                    <button type="button" class="btn btn-secondary mx-auto my-2">Submit</button><br>
+                </section>
+                <!-- Search Box -->
+                <div id="filter">
+                    <div id="filter-btns" class="bg-primary ml-5 p-3 text-white">
+                        <!-- Should I use h2, h3, h6? -->
+                        <h6 class="d-inline">Filter</h6>
+                        <button type="button" class="btn btn-secondary px-2 py-0">Apply</button>
+                        <!-- Should it be "Reset" or "Clear All"? -->
+                        <button type="button" class="btn btn-secondary px-2 py-0">Clear All</button>
+                    </div>
+                    <div class="border border-primary ml-5 px-3 py-1">
+                        <!-- Budgets section -->
+                        Budget<br>
+                        <input type="checkbox" id="price-range1" name="price" value="0-150">
+                        <label for="price-range1">$0 - $150</label><br>
+                        <input type="checkbox" id="price-range2" name="price" value="150-350">
+                        <label for="price-range2">$150 - $350</label><br>
+                        <input type="checkbox" id="price-range3" name="price" value="350-550">
+                        <label for="price-range3">$350 - $550</label><br>
+                        <input type="checkbox" id="price-range4" name="price" value="550-">
+                        <label for="price-range4">$550+</label><br>
+                    </div>
+                    <div class="border border-primary ml-5 px-3 py-1">
+                        <!-- Stars section -->
+                        Stars<br>
+                        <input type="checkbox" id="3star" name="stars" value="3">
+                        <label for="3star">3 Stars</label><br>
+                        <input type="checkbox" id="4star" name="stars" value="4">
+                        <label for="4star">4 Stars</label><br>
+                        <input type="checkbox" id="5star" name="stars" value="5">
+                        <label for="5star">5 Stars</label><br>
+                    </div>
+                    <div class="border border-primary ml-5 px-3 py-1">
+                        <!-- Ammenities section -->
+                        Ammenities<br>
+                        <input type="checkbox" id="wifi" name="ammenities" value="wifi">
+                        <label for="wifi">Free WiFi</label><br>
+                        <input type="checkbox" id="parking" name="ammenities" value="parking">
+                        <label for="parking">Parking</label><br>
+                        <input type="checkbox" id="shuttle" name="ammenities" value="shuttle">
+                        <label for="shuttle">Airport Shuttle</label><br>
+                        <input type="checkbox" id="pool" name="ammenities" value="pool">
+                        <label for="pool">Swimming Pool</label><br>
+                        <input type="checkbox" id="gym" name="ammenities" value="gym">
+                        <label for="gym">Fitness Center</label><br>
+                    </div>
+                </div>
+            </div><!-- end column 1 -->
+            <div class="col-7">
+                <div id="flights">
+                    <div class="bg-primary mr-5 p-3 text-white">
+                        <!-- What header should this be in: h1, h2, h3? -->
+                        Hotels Available: <span class="numOfResults float-right">1 Search Result</span>
+                    </div>
+                    <!-- Example div that would be filled when results returned by search -->
+                    <div class="card m-5 px-3 py-1">
+                        <div class="card-body">
+                            <span class="numOfStops text-primary font-weight-bold">Holiday Inn</span>
+                            <span class="gold">&#9733; &#9733; &#9733; &#9733; &#9734;</span>
+                            <span class="float-right font-weight-bold">$125/night</span>
+                            <br>1234 Main St. San Diego, CA
+                            <button type="button" class="btn btn-secondary px-2 py-0 float-right">Select Room</button>
+                        </div>
+                    </div>
+                </div>
+            </div><!-- end col2 -->
+        </div>
+<%- include('partials/footer.ejs') %>

@@ -1,0 +1,109 @@
+<%- include('partials/header.ejs') %>
+<%- include('partials/checkout.ejs') %>
+    <div id="cart" class="d-flex justify-content-end mr-5">
+        <span class="items align-self-center mr-5 px-3">0 items &#128722;</span>
+    </div>
+        <div class="row">
+            <div class="col-4 mb-5">
+                <!-- Search Box -->
+                <section id="search" class="section ml-5 mb-5 p-3 bg-primary text-white">
+                    <div class="d-inline-block">
+                        <!-- Should I use h2, h3, h6? -->
+                        <h6 class="d-inline">Search</h6><br>
+                        <!-- Should I use a form or just inputs and a button? -->
+                        <div class="d-inline">
+                            <input type="radio" class="d-inline ml-2" id="roundtrip" name="triptype" value="roundtrip" checked>
+                            <label for="roundtrip" class="d-inline mr-2">Round Trip</label>
+                            <input type="radio" class="d-inline ml-2" id="oneway" name="triptype" value="oneway">
+                            <label for="oneway" class="d-inline mr-2">One-way</label><br>
+                        </div>
+                        <div class="row  mb-n2">
+                            <label for="departLoc" class="col">Depart:</label>
+                            <label for="arriveLoc" class="col">Arrive:</label>
+                        </div>
+                        <div class="row">
+                            <input type="text" class="col mx-3 mb-3 mt-0 form-control" id="departLoc">
+                            <input type="text" class="col mx-3 mb-3 mt-0 form-control" id="arriveLoc">
+                        </div>
+                        
+                        <label for="departDate">Depart Date:</label>
+                        <input type="date" class="w-60" id="departDate"><br>
+                        <!-- Use roundtrip class as search criteria for hiding return date if one-way selected-->
+                        <label for="departDate">Return Date:</label>
+                        <input type="date" class="w-60" id="returnDate"><br>
+                        
+                        <!-- Button or should it be form submit? -->
+                        <button type="button" class="btn btn-secondary mx-2 my-2">Submit</button><br>
+                    </div>
+                </section>
+                <!-- Search Box -->
+                <div id="filter">
+                    <div id="filter-btns" class="bg-primary ml-5 p-3 text-white">
+                        <!-- Should I use h2, h3, h6? -->
+                        <h6 class="d-inline">Filter</h6>
+                        <button type="button" class="btn btn-secondary px-2 py-0">Apply</button>
+                        <!-- Should it be "Reset" or "Clear All"? -->
+                        <button type="button" class="btn btn-secondary px-2 py-0">Clear All</button>
+                    </div>
+                    <div class="border border-primary ml-5 px-3 py-1">
+                        <!-- Budgets section -->
+                        Budget<br>
+                        <input type="checkbox" id="price-range1" name="price" value="0-150">
+                        <label for="price-range1">$0 - $150</label><br>
+                        <input type="checkbox" id="price-range2" name="price" value="150-350">
+                        <label for="price-range2">$150 - $350</label><br>
+                        <input type="checkbox" id="price-range3" name="price" value="350-550">
+                        <label for="price-range3">$350 - $550</label><br>
+                        <input type="checkbox" id="price-range4" name="price" value="550-">
+                        <label for="price-range4">$550+</label><br>
+                    </div>
+                    <div class="border border-primary ml-5 px-3 py-1">
+                        <!-- Stops section -->
+                        Stops<br>
+                        <input type="checkbox" id="nonstop" name="stops" value="0">
+                        <label for="nonstop">Nonstop</label><br>
+                        <input type="checkbox" id="1stop" name="stops" value="1">
+                        <!-- "Layover" or "Stop"? -->
+                        <label for="1stop">1 Layover</label><br>
+                        <input type="checkbox" id="2stop" name="stops" value="2">
+                        <label for="2stop">$150 - $350</label><br>
+                    </div>
+                    <div class="border border-primary ml-5 px-3 py-1">
+                        <!-- Time of day section: Is this time it leaves or arrives? -->
+                        Time of Day<br>
+                        <input type="checkbox" id="am" name="times" value="am">
+                        <label for="am">AM</label><br>
+                        <input type="checkbox" id="pm" name="times" value="pm">
+                        <label for="pm">PM</label><br>
+                        <input type="checkbox" id="redeye" name="times" value="redeye">
+                        <label for="redeye">Redeye</label><br>
+                    </div>
+                </div>
+            </div><!-- end column 1 -->
+            <div class="col-7">
+                <div id="flights">
+                    <div class="bg-primary mr-5 p-3 text-white">
+                        <!-- What header should this be in: h1, h2, h3? -->
+                        Flights Available: <span class="numOfResults float-right">1 Search Result</span>
+                    </div>
+                    <!-- Example div that would be filled when results returned by search -->
+                    <div class="card m-5 px-3 py-1">
+                        <div class="card-body">
+                            <!-- Do I need all these spans or just for the bold/color styled stops, price, and time 
+                            and the ones used for filtering? -->
+                            <span class="numOfStops text-primary font-weight-bold">1 Stop</span>
+                            Flight #<span class="flightNum">1234</span>
+                            &#9992;<span class="airline">Southwest</span>
+                            <span class="price float-right font-weight-bold">$100</span><br>
+                            <!-- Should the leave and arrive times be in diff spans? -->
+                            <span class="flight-times text-secondary font-weight-bold">6:30am - 11:50pm</span><br>
+                            <span class="airport-names">PHL - SFO</span> | 
+                            <span class="flight-length">8hr 20m</span> | 
+                            <!-- Should the number of stops and the length of the layover be in diff spans?-->
+                            <span class="stops-length">1 stop (DEN) 40 min</span>
+                        </div>
+                    </div>
+                </div>
+            </div><!-- end col2 -->
+        </div>
+<%- include('partials/footer.ejs') %>

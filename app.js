@@ -4,6 +4,7 @@ const session = require("express-session");
 const bcrypt = require("bcrypt");
 const pool = require("./dbPool.js");
 
+
 app.engine('html', require('ejs').renderFile);
 app.use(express.static("public"));
 
@@ -34,9 +35,146 @@ app.get("/contact", function(req, res) {
    res.render("contact.ejs", {"authenticatied": (req.session.authenticatied ? true : false)});
 });
 
-app.get("/admin", function(req, res) {
-   res.render("admin.ejs", {"authenticatied": (req.session.authenticatied ? true : false)}); 
+
+// ****************************************************************
+app.get("/admin", isAuthenticated, function(req, res) {
+    res.render("admin.ejs", {
+        "authenticatied": (req.session.authenticatied ? true : false)        
+    }); 
 });
+
+app.get("/admin/flights", isAuthenticated, function (req, res) {
+    let success,
+        message;
+    if (typeof (req.session.deleting_status) == 'object') {
+        success = req.session.deleting_status.success,
+        message = req.session.deleting_status.message;
+        delete (req.session.deleting_status);
+    }
+    
+    pool.query("SELECT * FROM flights", function (err, data) {
+        if (err) return console.log(err);
+        res.render("admin/flights/index.ejs", {
+            authenticatied: (req.session.authenticatied ? true : false),
+            flights: data,
+            dtm: dtm,
+            success: success,
+            message: message
+        });
+    });
+});
+
+app.get("/admin/flights/add", isAuthenticated, function (req, res) {
+    res.render("admin/flights/add.ejs");
+});
+
+app.post("/admin/flights/add", isAuthenticated, function (req, res) {
+    if (!req.body) return res.sendStatus(400);
+    const flight_num = req.body.flight_num,
+        airline = req.body.airline,
+        departure_timestamp = req.body.departure_timestamp,
+        arrival_timestamp = req.body.arrival_timestamp,
+        departure_airport = req.body.departure_airport,
+        arrival_airport = req.body.arrival_airport,
+        layovers = req.body.layovers,
+        price = req.body.price;
+    pool.query(
+        "INSERT INTO flights SET flight_num=?, airline=?, departure_timestamp=?, arrival_timestamp=?, departure_airport=?, arrival_airport=?, layovers=?, price=?",
+        [flight_num, airline, departure_timestamp, arrival_timestamp, departure_airport, arrival_airport, layovers, price],
+        function (err, data) {
+            if (err) {
+                req.session.saving_status = {
+                    success: 0,
+                    message: `Errors during deleting: ${err}`
+                }
+            } else {
+                req.session.saving_status = {
+                    'success': 1,
+                    'message': `Flight #${flight_num} saved successfully!`
+                }
+            }
+            res.redirect(`/admin/flights/edit/${flight_num}`)
+        }
+    );
+});
+
+app.get("/admin/flights/edit/:id", isAuthenticated, function (req, res) {
+    let success,
+        message;
+    if (typeof (req.session.saving_status) == 'object') {
+        success = req.session.saving_status.success,
+        message = req.session.saving_status.message;
+        delete(req.session.saving_status);
+    }
+    pool.query("SELECT * FROM flights WHERE flight_num=?", [req.params.id], function (err, data) {
+        if (err) return console.log(err);
+        res.render("admin/flights/edit.ejs", {
+            flight: data[0],
+            dtm: dtm,
+            success: success,
+            message: message
+        });
+    });
+});
+
+app.post("/admin/flights/edit/:id", isAuthenticated, function (req, res) {
+    if (!req.body) return res.sendStatus(400);
+    const flight_num = req.params.id,
+        airline = req.body.airline,
+        departure_timestamp = req.body.departure_timestamp,
+        arrival_timestamp = req.body.arrival_timestamp,
+        departure_airport = req.body.departure_airport,
+        arrival_airport = req.body.arrival_airport,
+        layovers = req.body.layovers,
+        price = req.body.price;
+    pool.query(
+        "UPDATE flights SET airline=?, departure_timestamp=?, arrival_timestamp=?, departure_airport=?, arrival_airport=?, layovers=?, price=? WHERE flight_num=?", 
+        [airline, departure_timestamp, arrival_timestamp, departure_airport, arrival_airport, layovers, price, flight_num], 
+        function (err, data) {
+            if (err) {
+                req.session.saving_status = {
+                    success: 0,
+                    message: `Errors during deleting: ${err}`
+                }
+            } else {
+                req.session.saving_status = {
+                    'success': 1,
+                    'message': `Flight #${flight_num} saved successfully!`
+                }
+            }
+            res.redirect(`/admin/flights/edit/${flight_num}`)
+        }
+    );
+});
+
+app.get("/admin/flights/delete/:id", isAuthenticated, function (req, res) {
+    pool.query("DELETE FROM flights WHERE flight_num=?", [req.params.id], function (err, data) {
+        if (err) {
+            req.session.deleting_status = {
+                'success': 0,
+                'message': `Errors during deleting: ${err}`
+            }
+        } else {
+            req.session.deleting_status = {
+                'success': 1,
+                'message': `Flight #${req.params.id} deleted successfully!`
+            }
+        }
+        res.redirect(`/admin/flights`)
+    });
+});
+
+app.get("/admin/flights/report", isAuthenticated, function (req, res) {
+
+    pool.query("SELECT COUNT(*) as FLIGHTS_COUNT, AVG(price) as AVG_PRICE FROM flights", function (err, data) {
+        if (err) return console.log(err);
+        res.render("admin/flights/report.ejs", {
+            data: data[0],
+        });
+    });
+});
+
+
 
 app.get("/login", function(req, res) {
    res.render("login.ejs"); 
@@ -64,7 +202,7 @@ app.post("/login", async function(req, res) {
     // if (await checkPassword(password, hashedPwd)) {
         req.session.authenticatied = true;
         req.session.username = username;
-        res.render("index", {"authenticatied":true});
+        res.redirect("/admin");
     } else {
         res.render("login", {"loginError":true});
     }
@@ -112,6 +250,13 @@ app.get("/api/getReservation", function(req, res) {
 //     });
 // });
 
+const dtm = (timestamp) => {  // javascript to mysql datetime convert
+    let date = new Date(timestamp);
+    return date.getFullYear() + '-' +
+        ('00' + (date.getMonth() + 1)).slice(-2) + '-' + ('00' + date.getDate()).slice(-2) + ' ' +
+        ('00' + date.getHours()).slice(-2) + ':' + ('00' + date.getMinutes()).slice(-2); 
+} 
+
 function checkPassword(password, hashedValue) {
     return new Promise(function(resolve, reject) {
         bcrypt.compare(password, hashedValue, function(err, result) {
@@ -122,8 +267,9 @@ function checkPassword(password, hashedValue) {
 }
 
 function isAuthenticated(req, res, next) {
+    // console.log('check auth: ', req.session.authenticatied);
     if (!req.session.authenticatied) {
-        res.redirect("/");
+        res.redirect("/login");
     } else {
         next();
     }
